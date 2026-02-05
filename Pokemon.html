@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon GO 風格遊戲</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            color: #ffcc00;
+            text-shadow: 2px 2px 0 #3d5afe, 4px 4px 0 #1a237e;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #bbdefb;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #4fc3f7;
+        }
+        
+        .player-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #bbdefb;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+        
+        .pokeball-icon, .coin-icon, .level-icon {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .game-section {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid #ff4081;
+        }
+        
+        .section-title {
+            color: #ff4081;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ff4081;
+            padding-bottom: 10px;
+        }
+        
+        .wild-pokemon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        
+        .pokemon-display {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            border: 5px solid #ffcc00;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pokemon-image {
+            width: 160px;
+            height: 160px;
+            filter: drop-shadow(3px 3px 5px rgba(0, 0, 0, 0.5));
+            z-index: 2;
+        }
+        
+        .pokemon-name {
+            font-size: 1.8rem;
+            color: #ffcc00;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        .pokemon-type {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: #4fc3f7;
+            color: #1a237e;
+        }
+        
+        .pokemon-hp {
+            font-size: 1.2rem;
+            color: #69f0ae;
+            margin-bottom: 20px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .catch-btn {
+            background: linear-gradient(to right, #ff4081, #f50057);
+            color: white;
+            box-shadow: 0 4px 0 #c51162;
+        }
+        
+        .catch-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #c51162;
+        }
+        
+        .battle-btn {
+            background: linear-gradient(to right, #ff9800, #ff5722);
+            color: white;
+            box-shadow: 0 4px 0 #d84315;
+        }
+        
+        .battle-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #d84315;
+        }
+        
+        .run-btn {
+            background: linear-gradient(to right, #9e9e9e, #616161);
+            color: white;
+            box-shadow: 0 4px 0 #424242;
+        }
+        
+        .run-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #424242;
+        }
+        
+        .inventory-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .inventory-item {
+            background: rgba(79, 195, 247, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #4fc3f7;
+            transition: all 0.3s;
+        }
+        
+        .inventory-item:hover {
+            transform: translateY(-5px);
+            background: rgba(79, 195, 247, 0.4);
+        }
+        
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .item-count {
+            color: #69f0ae;
+            font-weight: bold;
+        }
+        
+        .tasks-container {
+            grid-column: 1 / -1;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .task-item {
+            background: rgba(255, 193, 7, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #ffc107;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-info {
+            flex-grow: 1;
+        }
+        
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffc107;
+        }
+        
+        .task-description {
+            color: #bbdefb;
+            font-size: 0.9rem;
+        }
+        
+        .task-reward {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #69f0ae;
+            font-weight: bold;
+        }
+        
+        .task-complete-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .task-complete-btn:hover {
+            background: #388e3c;
+        }
+        
+        .shop-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .shop-item {
+            background: rgba(156, 39, 176, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #9c27b0;
+            transition: all 0.3s;
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-5px);
+            background: rgba(156, 39, 176, 0.4);
+        }
+        
+        .shop-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #e1bee7;
+        }
+        
+        .shop-item-price {
+            color: #ffcc00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .shop-item-desc {
+            font-size: 0.9rem;
+            color: #bbdefb;
+            margin-bottom: 15px;
+        }
+        
+        .buy-btn {
+            background: #9c27b0;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        
+        .buy-btn:hover {
+            background: #7b1fa2;
+        }
+        
+        .battle-log {
+            background: rgba(244, 67, 54, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #f44336;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-title {
+            color: #f44336;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .log-entry {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .log-entry.player {
+            color: #4fc3f7;
+        }
+        
+        .log-entry.enemy {
+            color: #ff9800;
+        }
+        
+        .log-entry.info {
+            color: #69f0ae;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 3px solid #ffcc00;
+            text-align: center;
+        }
+        
+        .modal-title {
+            color: #ffcc00;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .modal-message {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .modal-btn {
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .caught-pokemon-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .caught-pokemon {
+            background: rgba(105, 240, 174, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            width: 120px;
+            border: 1px solid #69f0ae;
+        }
+        
+        .caught-pokemon img {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .caught-pokemon-name {
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: #bbdefb;
+            font-size: 0.9rem;
+        }
+        
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a237e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .loading-text {
+            font-size: 2rem;
+            color: #ffcc00;
+            margin-top: 20px;
+        }
+        
+        .pokeball-loader {
+            width: 100px;
+            height: 100px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-animation {
+            animation: success 0.5s ease-out;
+        }
+        
+        @keyframes success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTUwIDBDMjIuMzkgMCAwIDIyLjM5IDAgNTBjMCAyNy42MSAyMi4zOSA1MCA1MCA1MCAyNy42MSAwIDUwLTIyLjM5IDUwLTUwQzEwMCAyMi4zOSA3Ny42MSAwIDUwIDBaIiBmaWxsPSIjRkZDMDAwIi8+PHBhdGggZD0iTTUwIDI1QzM2LjEgMjUgMjUgMzYuMSAyNSA1MEMyNSA2My45IDM2LjEgNzUgNTAgNzVjMTMuOSAwIDI1LTExLjEgMjUtMjVDNzUgMzYuMSA2My45IDI1IDUwIDI1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNTAgMjVWMDBDMjIuMzkgMCAwIDIyLjM5IDAgNTBIMjVDMjUgMzYuMSAzNi4xIDI1IDUwIDI1WiIgZmlsbD0iI0ZGNTAwMCIvPjxwYXRoIGQ9Ik01MCA3NVYxMDBDNzcuNjEgMTAwIDEwMCA3Ny42MSAxMDAgNTBINzVDNzUgNjMuOSA2My45IDc1IDUwIDc1WiIgZmlsbD0iI0ZGNTAwMCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjEwIiBmaWxsPSIjRkZDMDAwIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNSIgZmlsbD0id2hpdGUiLz48L3N2Zz4=" alt="Poké Ball" class="pokeball-loader">
+        <div class="loading-text">載入中...</div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Pokémon GO 風格遊戲</h1>
+            <p>捕捉寶可夢、完成任務、商店購物、進行對戰！</p>
+        </div>
+        
+        <div class="game-info">
+            <div class="player-stats">
+                <div class="stat-box">
+                    <div class="stat-label">玩家等級</div>
+                    <div class="stat-value"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNSIgY3k9IjE1IiByPSIxNSIgZmlsbD0iIzRGQzNGRyIvPjx0ZXh0IHg9IjE1IiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+JmxldmVsOzwvdGV4dD48L3N2Zz4=" class="level-icon" alt="等級"> <span id="playerLevel">5</span></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">金錢</div>
+                    <div class="stat-value"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNSIgY3k9IjE1IiByPSIxNSIgZmlsbD0iI0ZGQ0MwMCIvPjx0ZXh0IHg9IjE1IiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+JGNvaW47PC90ZXh0Pjwvc3ZnPg==" class="coin-icon" alt="金錢"> <span id="playerMoney">350</span></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">精靈球</div>
+                    <div class="stat-value"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTUgMEM2LjcyIDAgMCA2LjcyIDAgMTVjMCA4LjI4IDYuNzIgMTUgMTUgMTUgOC4yOCAwIDE1LTYuNzIgMTUtMTVDMzAgNi43MiAyMy4yOCAwIDE1IDBaIiBmaWxsPSIjRkYzNjA1Ii8+PHBhdGggZD0iTTE1IDVjLTUuNTIgMC0xMCA0LjQ4LTEwIDEwIDAgNS41MiA0LjQ4IDEwIDEwIDEwIDUuNTIgMCAxMC00LjQ4IDEwLTEwQzI1IDkuNDggMjAuNTIgNSAxNSA1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMTUgNVYwQzYuNzIgMCAwIDYuNzIgMCAxNWg1QzUgOS40OCA5LjQ4IDUgMTUgNVoiIGZpbGw9IiNGRjAwMDAiLz48cGF0aCBkPSJNMTUgMjVWMzBDMjMuMjggMzAgMzAgMjMuMjggMzAgMTVIMjVDMjUgMjAuNTIgMjAuNTIgMjUgMTUgMjVaIiBmaWxsPSIjRkYwMDAwIi8+PGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMy41IiBmaWxsPSIjRkYzNjA1Ii8+PGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMS41IiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==" class="pokeball-icon" alt="精靈球"> <span id="pokeballCount">10</span></div>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">已捕捉寶可夢</div>
+                <div class="stat-value"><span id="caughtPokemonCount">3</span> / 151</div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="game-section">
+                <h2 class="section-title">野生寶可夢</h2>
+                <div class="wild-pokemon-container">
+                    <div class="pokemon-display">
+                        <img id="wildPokemonImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDE2MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iNjAiIGZpbGw9IiM4MUQ0RkEiLz48Y2lyY2xlIGN4PSI4MCIgY3k9IjgwIiByPSI0MCIgZmlsbD0id2hpdGUiLz48L3N2Zz4=" alt="寶可夢" class="pokemon-image">
+                    </div>
+                    <div class="pokemon-name" id="wildPokemonName">???</div>
+                    <div class="pokemon-type" id="wildPokemonType">???</div>
+                    <div class="pokemon-hp" id="wildPokemonHP">HP: ???</div>
+                    <div class="action-buttons">
+                        <button class="action-btn catch-btn" id="catchBtn">捕捉</button>
+                        <button class="action-btn battle-btn" id="battleBtn">對戰</button>
+                        <button class="action-btn run-btn" id="runBtn">逃跑</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-section">
+                <h2 class="section-title">我的物品</h2>
+                <div class="inventory-container" id="inventoryContainer">
+                    <!-- 物品會透過JavaScript動態生成 -->
+                </div>
+                
+                <h2 class="section-title" style="margin-top: 30px;">已捕捉寶可夢</h2>
+                <div class="caught-pokemon-container" id="caughtPokemonContainer">
+                    <!-- 已捕捉寶可夢會透過JavaScript動態生成 -->
+                </div>
+            </div>
+            
+            <div class="game-section tasks-container">
+                <h2 class="section-title">任務</h2>
+                <div class="task-list" id="taskList">
+                    <!-- 任務會透過JavaScript動態生成 -->
+                </div>
+            </div>
+            
+            <div class="game-section">
+                <h2 class="section-title">商店</h2>
+                <div class="shop-container" id="shopContainer">
+                    <!-- 商店商品會透過JavaScript動態生成 -->
+                </div>
+                
+                <div class="battle-log">
+                    <div class="log-title">對戰記錄</div>
+                    <div id="battleLog">
+                        <div class="log-entry info">歡迎來到 Pokémon GO 風格遊戲！</div>
+                        <div class="log-entry info">尋找野生寶可夢並嘗試捕捉牠們！</div>
+                        <div class="log-entry info">完成任務可以獲得金錢獎勵！</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Pokémon GO 風格遊戲 | 此為粉絲創作，與官方 Pokémon GO 遊戲無關</p>
+        </div>
+    </div>
+    
+    <!-- 捕捉成功模態框 -->
+    <div class="modal" id="catchModal">
+        <div class="modal-content">
+            <h2 class="modal-title">捕捉成功！</h2>
+            <p class="modal-message" id="catchModalMessage">你成功捕捉了皮卡丘！</p>
+            <button class="modal-btn" id="closeCatchModal">確定</button>
+        </div>
+    </div>
+    
+    <!-- 捕捉失敗模態框 -->
+    <div class="modal" id="escapeModal">
+        <div class="modal-content">
+            <h2 class="modal-title">捕捉失敗</h2>
+            <p class="modal-message" id="escapeModalMessage">寶可夢逃跑了！</p>
+            <button class="modal-btn" id="closeEscapeModal">確定</button>
+        </div>
+    </div>
+    
+    <!-- 購買成功模態框 -->
+    <div class="modal" id="buyModal">
+        <div class="modal-content">
+            <h2 class="modal-title">購買成功</h2>
+            <p class="modal-message" id="buyModalMessage">你購買了精靈球！</p>
+            <button class="modal-btn" id="closeBuyModal">確定</button>
+        </div>
+    </div>
+    
+    <!-- 對戰模態框 -->
+    <div class="modal" id="battleModal">
+        <div class="modal-content">
+            <h2 class="modal-title">寶可夢對戰</h2>
+            <div class="battle-info">
+                <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: bold; color: #4fc3f7; margin-bottom: 10px;">你的寶可夢</div>
+                        <div id="playerPokemonName" style="font-size: 1.5rem; margin-bottom: 5px;">皮卡丘</div>
+                        <div id="playerPokemonHP" style="color: #69f0ae;">HP: 100/100</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: bold; color: #ff9800; margin-bottom: 10px;">野生寶可夢</div>
+                        <div id="enemyPokemonName" style="font-size: 1.5rem; margin-bottom: 5px;">小火龍</div>
+                        <div id="enemyPokemonHP" style="color: #69f0ae;">HP: 100/100</div>
+                    </div>
+                </div>
+                
+                <div id="battleActionLog" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; min-height: 100px; margin-bottom: 20px; text-align: left;">
+                    <div>對戰開始！</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <button class="action-btn battle-btn" id="attackBtn">攻擊</button>
+                    <button class="action-btn catch-btn" id="catchDuringBattleBtn">捕捉</button>
+                    <button class="action-btn" style="background: #9c27b0;" id="usePotionBtn">使用傷藥</button>
+                    <button class="action-btn run-btn" id="runFromBattleBtn">逃跑</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 任務完成模態框 -->
+    <div class="modal" id="taskCompleteModal">
+        <div class="modal-content">
+            <h2 class="modal-title">任務完成！</h2>
+            <p class="modal-message" id="taskCompleteMessage">你完成了任務！</p>
+            <button class="modal-btn" id="closeTaskCompleteModal">領取獎勵</button>
+        </div>
+    </div>
+
+    <script>
+        // 遊戲數據
+        const gameData = {
+            player: {
+                level: 5,
+                exp: 120,
+                expToNextLevel: 200,
+                money: 350,
+                pokeballs: 10,
+                potions: 3,
+                caughtPokemon: []
+            },
+            
+            pokemonList: [
+                { id: 1, name: "妙蛙種子", type: "草/毒", hp: 45, maxHP: 45, catchRate: 45, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" },
+                { id: 4, name: "小火龍", type: "火", hp: 39, maxHP: 39, catchRate: 45, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" },
+                { id: 7, name: "傑尼龜", type: "水", hp: 44, maxHP: 44, catchRate: 45, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" },
+                { id: 25, name: "皮卡丘", type: "電", hp: 35, maxHP: 35, catchRate: 35, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" },
+                { id: 16, name: "波波", type: "一般/飛行", hp: 40, maxHP: 40, catchRate: 50, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png" },
+                { id: 19, name: "小拉達", type: "一般", hp: 30, maxHP: 30, catchRate: 55, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/19.png" },
+                { id: 10, name: "綠毛蟲", type: "蟲", hp: 45, maxHP: 45, catchRate: 60, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png" },
+                { id: 13, name: "獨角蟲", type: "蟲/毒", hp: 40, maxHP: 40, catchRate: 60, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/13.png" },
+                { id: 133, name: "伊布", type: "一般", hp: 55, maxHP: 55, catchRate: 30, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" },
+                { id: 147, name: "迷你龍", type: "龍", hp: 41, maxHP: 41, catchRate: 25, image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/147.png" }
+            ],
+            
+            items: [
+                { id: 1, name: "精靈球", description: "用來捕捉寶可夢的基本道具", price: 50, type: "pokeball", icon: "pokeball" },
+                { id: 2, name: "超級球", description: "比精靈球更容易捕捉寶可夢", price: 200, type: "pokeball", icon: "greatball" },
+                { id: 3, name: "高級球", description: "比超級球更容易捕捉寶可夢", price: 500, type: "pokeball", icon: "ultraball" },
+                { id: 4, name: "傷藥", description: "恢復寶可夢20點HP", price: 100, type: "potion", icon: "potion" },
+                { id: 5, name: "好傷藥", description: "恢復寶可夢50點HP", price: 250, type: "potion", icon: "superpotion" },
+                { id: 6, name: "厲害傷藥", description: "完全恢復寶可夢的HP", price: 800, type: "potion", icon: "hyperpotion" }
+            ],
+            
+            tasks: [
+                { id: 1, title: "捕捉初學者", description: "捕捉3隻寶可夢", progress: 0, target: 3, reward: 200, completed: false },
+                { id: 2, title: "對戰訓練", description: "進行2次對戰", progress: 0, target: 2, reward: 300, completed: false },
+                { id: 3, title: "購物時間", description: "在商店購買2個物品", progress: 0, target: 2, reward: 150, completed: false },
+                { id: 4, title: "寶可夢收藏家", description: "捕捉5種不同的寶可夢", progress: 0, target: 5, reward: 500, completed: false },
+                { id: 5, title: "戰鬥大師", description: "贏得3場對戰", progress: 0, target: 3, reward: 400, completed: false }
+            ],
+            
+            shopItems: [
+                { id: 1, name: "精靈球", description: "用來捕捉寶可夢的基本道具", price: 50, type: "pokeball" },
+                { id: 2, name: "超級球", description: "比精靈球更容易捕捉寶可夢", price: 200, type: "pokeball" },
+                { id: 3, name: "傷藥", description: "恢復寶可夢20點HP", price: 100, type: "potion" },
+                { id: 4, name: "好傷藥", description: "恢復寶可夢50點HP", price: 250, type: "potion" },
+                { id: 5, name: "幸運蛋", description: "30分鐘內獲得雙倍經驗值", price: 500, type: "special" },
+                { id: 6, name: "誘餌模組", description: "吸引更多寶可夢出現", price: 400, type: "special" }
+            ],
+            
+            wildPokemon: null,
+            battleActive: false,
+            playerBattlePokemon: null,
+            enemyBattlePokemon: null
+        };
+
+        // DOM 元素
+        const elements = {
+            loadingScreen: document.getElementById('loadingScreen'),
+            playerLevel: document.getElementById('playerLevel'),
+            playerMoney: document.getElementById('playerMoney'),
+            pokeballCount: document.getElementById('pokeballCount'),
+            caughtPokemonCount: document.getElementById('caughtPokemonCount'),
+            wildPokemonImage: document.getElementById('wildPokemonImage'),
+            wildPokemonName: document.getElementById('wildPokemonName'),
+            wildPokemonType: document.getElementById('wildPokemonType'),
+            wildPokemonHP: document.getElementById('wildPokemonHP'),
+            catchBtn: document.getElementById('catchBtn'),
+            battleBtn: document.getElementById('battleBtn'),
+            runBtn: document.getElementById('runBtn'),
+            inventoryContainer: document.getElementById('inventoryContainer'),
+            caughtPokemonContainer: document.getElementById('caughtPokemonContainer'),
+            taskList: document.getElementById('taskList'),
+            shopContainer: document.getElementById('shopContainer'),
+            battleLog: document.getElementById('battleLog'),
+            catchModal: document.getElementById('catchModal'),
+            catchModalMessage: document.getElementById('catchModalMessage'),
+            closeCatchModal: document.getElementById('closeCatchModal'),
+            escapeModal: document.getElementById('escapeModal'),
+            escapeModalMessage: document.getElementById('escapeModalMessage'),
+            closeEscapeModal: document.getElementById('closeEscapeModal'),
+            buyModal: document.getElementById('buyModal'),
+            buyModalMessage: document.getElementById('buyModalMessage'),
+            closeBuyModal: document.getElementById('closeBuyModal'),
+            battleModal: document.getElementById('battleModal'),
+            playerPokemonName: document.getElementById('playerPokemonName'),
+            playerPokemonHP: document.getElementById('playerPokemonHP'),
+            enemyPokemonName: document.getElementById('enemyPokemonName'),
+            enemyPokemonHP: document.getElementById('enemyPokemonHP'),
+            battleActionLog: document.getElementById('battleActionLog'),
+            attackBtn: document.getElementById('attackBtn'),
+            catchDuringBattleBtn: document.getElementById('catchDuringBattleBtn'),
+            usePotionBtn: document.getElementById('usePotionBtn'),
+            runFromBattleBtn: document.getElementById('runFromBattleBtn'),
+            taskCompleteModal: document.getElementById('taskCompleteModal'),
+            taskCompleteMessage: document.getElementById('taskCompleteMessage'),
+            closeTaskCompleteModal: document.getElementById('closeTaskCompleteModal')
+        };
+
+        // 遊戲初始化
+        function initGame() {
+            // 隱藏載入畫面
+            setTimeout(() => {
+                elements.loadingScreen.style.display = 'none';
+            }, 1500);
+            
+            // 初始化玩家寶可夢
+            if (gameData.player.caughtPokemon.length === 0) {
+                // 添加初始寶可夢
+                gameData.player.caughtPokemon.push({
+                    ...gameData.pokemonList[3], // 皮卡丘
+                    currentHP: gameData.pokemonList[3].hp
+                });
+                gameData.player.caughtPokemon.push({
+                    ...gameData.pokemonList[1], // 小火龍
+                    currentHP: gameData.pokemonList[1].hp
+                });
+                gameData.player.caughtPokemon.push({
+                    ...gameData.pokemonList[0], // 妙蛙種子
+                    currentHP: gameData.pokemonList[0].hp
+                });
+            }
+            
+            // 更新顯示
+            updateUI();
+            spawnWildPokemon();
+            renderInventory();
+            renderCaughtPokemon();
+            renderTasks();
+            renderShop();
+            
+            // 設置事件監聽器
+            setupEventListeners();
+        }
+
+        // 更新UI
+        function updateUI() {
+            elements.playerLevel.textContent = gameData.player.level;
+            elements.playerMoney.textContent = gameData.player.money;
+            elements.pokeballCount.textContent = gameData.player.pokeballs;
+            elements.caughtPokemonCount.textContent = gameData.player.caughtPokemon.length;
+        }
+
+        // 生成野生寶可夢
+        function spawnWildPokemon() {
+            const randomIndex = Math.floor(Math.random() * gameData.pokemonList.length);
+            gameData.wildPokemon = { ...gameData.pokemonList[randomIndex] };
+            gameData.wildPokemon.currentHP = gameData.wildPokemon.hp;
+            
+            // 更新顯示
+            elements.wildPokemonImage.src = gameData.wildPokemon.image;
+            elements.wildPokemonName.textContent = gameData.wildPokemon.name;
+            elements.wildPokemonType.textContent = gameData.wildPokemon.type;
+            elements.wildPokemonHP.textContent = `HP: ${gameData.wildPokemon.currentHP}/${gameData.wildPokemon.maxHP}`;
+            
+            // 添加成功動畫
+            elements.wildPokemonImage.classList.add('success-animation');
+            setTimeout(() => {
+                elements.wildPokemonImage.classList.remove('success-animation');
+            }, 500);
+            
+            // 添加對戰記錄
+            addBattleLog(`出現了一隻野生的${gameData.wildPokemon.name}！`, "info");
+        }
+
+        // 捕捉寶可夢
+        function catchPokemon() {
+            if (gameData.player.pokeballs <= 0) {
+                addBattleLog("你沒有精靈球了！去商店購買一些吧。", "info");
+                return;
+            }
+            
+            // 使用一個精靈球
+            gameData.player.pokeballs--;
+            updateUI();
+            
+            // 計算捕捉成功率
+            const catchRate = gameData.wildPokemon.catchRate;
+            const random = Math.random() * 100;
+            
+            if (random <= catchRate) {
+                // 捕捉成功
+                gameData.player.caughtPokemon.push({
+                    ...gameData.wildPokemon,
+                    currentHP: gameData.wildPokemon.hp
+                });
+                
+                // 更新任務進度
+                updateTaskProgress("catch", 1);
+                
+                // 顯示成功訊息
+                elements.catchModalMessage.textContent = `你成功捕捉了${gameData.wildPokemon.name}！`;
+                elements.catchModal.style.display = 'flex';
+                
+                // 添加對戰記錄
+                addBattleLog(`你成功捕捉了${gameData.wildPokemon.name}！`, "player");
+                
+                // 獲得經驗值和金錢
+                gainExp(25);
+                gameData.player.money += 50;
+                updateUI();
+                
+                // 生成新的野生寶可夢
+                setTimeout(spawnWildPokemon, 1000);
+            } else {
+                // 捕捉失敗
+                elements.escapeModalMessage.textContent = `${gameData.wildPokemon.name}逃跑了！`;
+                elements.escapeModal.style.display = 'flex';
+                
+                // 添加對戰記錄
+                addBattleLog(`${gameData.wildPokemon.name}逃跑了！`, "enemy");
+                
+                // 有30%機率寶可夢會逃跑
+                if (Math.random() < 0.3) {
+                    setTimeout(spawnWildPokemon, 1000);
+                }
+            }
+        }
+
+        // 開始對戰
+        function startBattle() {
+            if (gameData.player.caughtPokemon.length === 0) {
+                addBattleLog("你沒有寶可夢可以對戰！", "info");
+                return;
+            }
+            
+            // 選擇玩家寶可夢（第一個）
+            gameData.playerBattlePokemon = { ...gameData.player.caughtPokemon[0] };
+            gameData.enemyBattlePokemon = { ...gameData.wildPokemon };
+            gameData.battleActive = true;
+            
+            // 更新對戰模態框
+            elements.playerPokemonName.textContent = gameData.playerBattlePokemon.name;
+            elements.playerPokemonHP.textContent = `HP: ${gameData.playerBattlePokemon.currentHP}/${gameData.playerBattlePokemon.maxHP}`;
+            elements.enemyPokemonName.textContent = gameData.enemyBattlePokemon.name;
+            elements.enemyPokemonHP.textContent = `HP: ${gameData.enemyBattlePokemon.currentHP}/${gameData.enemyBattlePokemon.maxHP}`;
+            
+            // 清空對戰行動記錄
+            elements.battleActionLog.innerHTML = '<div>對戰開始！</div>';
+            
+            // 顯示對戰模態框
+            elements.battleModal.style.display = 'flex';
+            
+            // 更新任務進度
+            updateTaskProgress("battle", 1);
+        }
+
+        // 攻擊行動
+        function attackAction() {
+            if (!gameData.battleActive) return;
+            
+            // 玩家攻擊
+            const playerDamage = Math.floor(Math.random() * 15) + 10;
+            gameData.enemyBattlePokemon.currentHP -= playerDamage;
+            if (gameData.enemyBattlePokemon.currentHP < 0) gameData.enemyBattlePokemon.currentHP = 0;
+            
+            elements.battleActionLog.innerHTML += `<div class="log-entry player">${gameData.playerBattlePokemon.name} 對 ${gameData.enemyBattlePokemon.name} 造成了 ${playerDamage} 點傷害！</div>`;
+            elements.enemyPokemonHP.textContent = `HP: ${gameData.enemyBattlePokemon.currentHP}/${gameData.enemyBattlePokemon.maxHP}`;
+            
+            // 檢查敵人是否被擊敗
+            if (gameData.enemyBattlePokemon.currentHP <= 0) {
+                elements.battleActionLog.innerHTML += `<div class="log-entry info">你擊敗了 ${gameData.enemyBattlePokemon.name}！</div>`;
+                endBattle(true);
+                updateTaskProgress("winBattle", 1);
+                return;
+            }
+            
+            // 敵人攻擊
+            setTimeout(() => {
+                if (!gameData.battleActive) return;
+                
+                const enemyDamage = Math.floor(Math.random() * 12) + 8;
+                gameData.playerBattlePokemon.currentHP -= enemyDamage;
+                if (gameData.playerBattlePokemon.currentHP < 0) gameData.playerBattlePokemon.currentHP = 0;
+                
+                elements.battleActionLog.innerHTML += `<div class="log-entry enemy">${gameData.enemyBattlePokemon.name} 對 ${gameData.playerBattlePokemon.name} 造成了 ${enemyDamage} 點傷害！</div>`;
+                elements.playerPokemonHP.textContent = `HP: ${gameData.playerBattlePokemon.currentHP}/${gameData.playerBattlePokemon.maxHP}`;
+                
+                // 檢查玩家是否被擊敗
+                if (gameData.playerBattlePokemon.currentHP <= 0) {
+                    elements.battleActionLog.innerHTML += `<div class="log-entry info">${gameData.playerBattlePokemon.name} 被擊敗了！</div>`;
+                    endBattle(false);
+                }
+                
+                // 滾動到最新記錄
+                elements.battleActionLog.scrollTop = elements.battleActionLog.scrollHeight;
+            }, 500);
+            
+            // 滾動到最新記錄
+            elements.battleActionLog.scrollTop = elements.battleActionLog.scrollHeight;
+        }
+
+        // 對戰中捕捉
+        function catchDuringBattle() {
+            if (gameData.player.pokeballs <= 0) {
+                elements.battleActionLog.innerHTML += `<div class="log-entry info">你沒有精靈球了！</div>`;
+                return;
+            }
+            
+            // 使用一個精靈球
+            gameData.player.pokeballs--;
+            updateUI();
+            
+            // 對戰中捕捉率較高
+            const catchRate = gameData.enemyBattlePokemon.catchRate * 1.5;
+            const random = Math.random() * 100;
+            
+            if (random <= catchRate) {
+                // 捕捉成功
+                elements.battleActionLog.innerHTML += `<div class="log-entry player">你成功捕捉了${gameData.enemyBattlePokemon.name}！</div>`;
+                
+                gameData.player.caughtPokemon.push({
+                    ...gameData.enemyBattlePokemon,
+                    currentHP: gameData.enemyBattlePokemon.maxHP
+                });
+                
+                // 更新任務進度
+                updateTaskProgress("catch", 1);
+                
+                // 獲得經驗值和金錢
+                gainExp(50);
+                gameData.player.money += 100;
+                updateUI();
+                
+                endBattle(true, true);
+            } else {
+                // 捕捉失敗
+                elements.battleActionLog.innerHTML += `<div class="log-entry enemy">捕捉失敗！${gameData.enemyBattlePokemon.name} 逃出了精靈球！</div>`;
+                
+                // 敵人攻擊
+                setTimeout(() => {
+                    if (!gameData.battleActive) return;
+                    
+                    const enemyDamage = Math.floor(Math.random() * 12) + 8;
+                    gameData.playerBattlePokemon.currentHP -= enemyDamage;
+                    if (gameData.playerBattlePokemon.currentHP < 0) gameData.playerBattlePokemon.currentHP = 0;
+                    
+                    elements.battleActionLog.innerHTML += `<div class="log-entry enemy">${gameData.enemyBattlePokemon.name} 對 ${gameData.playerBattlePokemon.name} 造成了 ${enemyDamage} 點傷害！</div>`;
+                    elements.playerPokemonHP.textContent = `HP: ${gameData.playerBattlePokemon.currentHP}/${gameData.playerBattlePokemon.maxHP}`;
+                    
+                    // 檢查玩家是否被擊敗
+                    if (gameData.playerBattlePokemon.currentHP <= 0) {
+                        elements.battleActionLog.innerHTML += `<div class="log-entry info">${gameData.playerBattlePokemon.name} 被擊敗了！</div>`;
+                        endBattle(false);
+                    }
+                    
+                    // 滾動到最新記錄
+                    elements.battleActionLog.scrollTop = elements.battleActionLog.scrollHeight;
+                }, 500);
+            }
+            
+            // 滾動到最新記錄
+            elements.battleActionLog.scrollTop = elements.battleActionLog.scrollHeight;
+        }
+
+        // 使用傷藥
+        function usePotion() {
+            if (gameData.player.potions <= 0) {
+                elements.battleActionLog.innerHTML += `<div class="log-entry info">你沒有傷藥了！</div>`;
+                return;
+            }
+            
+            // 使用一個傷藥
+            gameData.player.potions--;
+            
+            // 恢復寶可夢HP
+            const healAmount = 20;
+            gameData.playerBattlePokemon.currentHP += healAmount;
+            if (gameData.playerBattlePokemon.currentHP > gameData.playerBattlePokemon.maxHP) {
+                gameData.playerBattlePokemon.currentHP = gameData.playerBattlePokemon.maxHP;
+            }
+            
+            elements.battleActionLog.innerHTML += `<div class="log-entry player">你對 ${gameData.playerBattlePokemon.name} 使用了傷藥，恢復了 ${healAmount} 點HP！</div>`;
+            elements.playerPokemonHP.textContent = `HP: ${gameData.playerBattlePokemon.currentHP}/${gameData.playerBattlePokemon.maxHP}`;
+            
+            updateUI();
+            renderInventory();
+            
+            // 敵人攻擊
+            setTimeout(() => {
+                if (!gameData.battleActive) return;
+                
+                const enemyDamage = Math.floor(Math.random() * 12) + 8;
+                gameData.playerBattlePokemon.currentHP -= enemyDamage;
+                if (gameData.playerBattlePokemon.currentHP < 0) gameData.playerBattlePokemon.currentHP = 0;
+                
+                elements.battleActionLog.innerHTML += `<div class="log-entry enemy">${gameData.enemyBattlePokemon.name} 對 ${gameData.playerBattlePokemon.name} 造成了 ${enemyDamage} 點傷害！</div>`;
+                elements.playerPokemonHP.textContent = `HP: ${gameData.playerBattlePokemon.currentHP}/${gameData.playerBattlePokemon.maxHP}`;
+                
+                // 檢查玩家是否被擊敗
+                if (gameData.playerBattlePokemon.currentHP <= 0) {
+                    elements.battleActionLog.innerHTML += `<div class="log-entry info">${gameData.playerBattlePokemon.name} 被擊敗了！</div>`;
+                    endBattle(false);
+                }
+                
+                // 滾動到最新記錄
+                elements.battleActionLog.scrollTop = elements.battleActionLog.scrollHeight;
+            }, 500);
+            
+            // 滾動到最新記錄
+            elements.battleActionLog.scrollTop = elements.battleActionLog.scrollHeight;
+        }
+
+        // 從對戰中逃跑
+        function runFromBattle() {
+            elements.battleActionLog.innerHTML += `<div class="log-entry info">你從對戰中逃跑了！</div>`;
+            endBattle(false);
+        }
+
+        // 結束對戰
+        function endBattle(playerWon, caught = false) {
+            gameData.battleActive = false;
+            
+            if (playerWon && !caught) {
+                // 獲得獎勵
+                gainExp(30);
+                gameData.player.money += 80;
+                updateUI();
+                
+                setTimeout(() => {
+                    elements.battleModal.style.display = 'none';
+                    spawnWildPokemon();
+                }, 2000);
+            } else if (caught) {
+                setTimeout(() => {
+                    elements.battleModal.style.display = 'none';
+                    spawnWildPokemon();
+                    renderCaughtPokemon();
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    elements.battleModal.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // 獲得經驗值
+        function gainExp(exp) {
+            gameData.player.exp += exp;
+            
+            // 檢查是否升級
+            if (gameData.player.exp >= gameData.player.expToNextLevel) {
+                gameData.player.level++;
+                gameData.player.exp -= gameData.player.expToNextLevel;
+                gameData.player.expToNextLevel = Math.floor(gameData.player.expToNextLevel * 1.5);
+                
+                addBattleLog(`恭喜！你升級到了 ${gameData.player.level} 級！`, "info");
+            }
+            
+            updateUI();
+        }
+
+        // 購買物品
+        function buyItem(itemId) {
+            const item = gameData.shopItems.find(i => i.id === itemId);
+            
+            if (!item) return;
+            
+            if (gameData.player.money < item.price) {
+                addBattleLog("金錢不足！", "info");
+                return;
+            }
+            
+            // 扣除金錢
+            gameData.player.money -= item.price;
+            
+            // 添加物品到庫存
+            if (item.type === "pokeball") {
+                gameData.player.pokeballs++;
+            } else if (item.type === "potion") {
+                gameData.player.potions++;
+            }
+            
+            // 更新任務進度
+            updateTaskProgress("buy", 1);
+            
+            // 顯示購買成功訊息
+            elements.buyModalMessage.textContent = `你購買了${item.name}！`;
+            elements.buyModal.style.display = 'flex';
+            
+            // 更新UI
+            updateUI();
+            renderInventory();
+            
+            // 添加對戰記錄
+            addBattleLog(`你購買了${item.name}！`, "player");
+        }
+
+        // 更新任務進度
+        function updateTaskProgress(taskType, amount) {
+            gameData.tasks.forEach(task => {
+                if (task.completed) return;
+                
+                if (taskType === "catch" && task.title.includes("捕捉")) {
+                    task.progress += amount;
+                } else if (taskType === "battle" && task.title.includes("對戰")) {
+                    task.progress += amount;
+                } else if (taskType === "buy" && task.title.includes("購物")) {
+                    task.progress += amount;
+                } else if (taskType === "catch" && task.title.includes("收藏家")) {
+                    // 檢查是否捕捉了不同種類的寶可夢
+                    const uniquePokemon = [...new Set(gameData.player.caughtPokemon.map(p => p.id))];
+                    task.progress = uniquePokemon.length;
+                } else if (taskType === "winBattle" && task.title.includes("戰鬥大師")) {
+                    task.progress += amount;
+                }
+                
+                // 檢查任務是否完成
+                if (task.progress >= task.target && !task.completed) {
+                    task.completed = true;
+                    showTaskCompleteModal(task);
+                }
+            });
+            
+            renderTasks();
+        }
+
+        // 顯示任務完成模態框
+        function showTaskCompleteModal(task) {
+            elements.taskCompleteMessage.textContent = `你完成了「${task.title}」任務！獲得 ${task.reward} 金錢！`;
+            elements.taskCompleteModal.style.display = 'flex';
+            
+            // 領取獎勵
+            elements.closeTaskCompleteModal.onclick = function() {
+                gameData.player.money += task.reward;
+                updateUI();
+                elements.taskCompleteModal.style.display = 'none';
+                addBattleLog(`你完成了「${task.title}」任務，獲得 ${task.reward} 金錢！`, "info");
+            };
+        }
+
+        // 添加對戰記錄
+        function addBattleLog(message, type) {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = message;
+            elements.battleLog.appendChild(logEntry);
+            
+            // 限制記錄數量
+            while (elements.battleLog.children.length > 20) {
+                elements.battleLog.removeChild(elements.battleLog.firstChild);
+            }
+            
+            // 滾動到底部
+            elements.battleLog.scrollTop = elements.battleLog.scrollHeight;
+        }
+
+        // 渲染物品欄
+        function renderInventory() {
+            elements.inventoryContainer.innerHTML = '';
+            
+            // 精靈球
+            const pokeballItem = document.createElement('div');
+            pokeballItem.className = 'inventory-item';
+            pokeballItem.innerHTML = `
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjUgMEMxMS4xOSAwIDAgMTEuMTkgMCAyNWMwIDEzLjgxIDExLjE5IDI1IDI1IDI1IDEzLjgxIDAgMjUtMTEuMTkgMjUtMjVDNTAgMTEuMTkgMzguODEgMCAyNSAwWiIgZmlsbD0iI0ZGMzYwNSIvPjxwYXRoIGQ9Ik0yNSAxMi41QzE4LjEgMTIuNSAxMi41IDE4LjEgMTIuNSAyNSAxMi41IDMxLjkgMTguMSAzNy41IDI1IDM3LjUgMzEuOSAzNy41IDM3LjUgMzEuOSAzNy41IDI1QzM3LjUgMTguMSAzMS45IDEyLjUgMjUgMTIuNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI1IDEyLjVWMEwxMS4xOSAwIDAgMTEuMTkgMCAyNUgxMi41QzEyLjUgMTguMSAxOC4xIDEyLjUgMjUgMTIuNVoiIGZpbGw9IiNGRjAwMDAiLz48cGF0aCBkPSJNMjUgMzcuNVY1MEMzOC44MSA1MCA1MCAzOC44MSA1MCAyNUgzNy41QzM3LjUgMzEuOSAzMS45IDM3LjUgMjUgMzcuNVoiIGZpbGw9IiNGRjAwMDAiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSI2IiBmaWxsPSIjRkYzNjA1Ii8+PGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMyIgZmlsbD0id2hpdGUiLz48L3N2Zz4=" class="item-icon" alt="精靈球">
+                <div class="item-name">精靈球</div>
+                <div class="item-count">${gameData.player.pokeballs}</div>
+            `;
+            elements.inventoryContainer.appendChild(pokeballItem);
+            
+            // 傷藥
+            const potionItem = document.createElement('div');
+            potionItem.className = 'inventory-item';
+            potionItem.innerHTML = `
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iI0ZGMzYwNSIvPjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiByeD0iNSIgZmlsbD0iI0ZGMDAwMCIvPjxwYXRoIGQ9Ik0yNSAxNVYzNSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTUgMjVIMzUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+" class="item-icon" alt="傷藥">
+                <div class="item-name">傷藥</div>
+                <div class="item-count">${gameData.player.potions}</div>
+            `;
+            elements.inventoryContainer.appendChild(potionItem);
+            
+            // 其他物品
+            const otherItems = [
+                { name: "超級球", count: 2, icon: "greatball" },
+                { name: "高級球", count: 0, icon: "ultraball" },
+                { name: "好傷藥", count: 1, icon: "superpotion" },
+                { name: "幸運蛋", count: 0, icon: "luckyegg" }
+            ];
+            
+            otherItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'inventory-item';
+                itemElement.innerHTML = `
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIyNSIgZmlsbD0iIzRGQzNGRyIvPjx0ZXh0IHg9IjI1IiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PyE8L3RleHQ+PC9zdmc+" class="item-icon" alt="${item.name}">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-count">${item.count}</div>
+                `;
+                elements.inventoryContainer.appendChild(itemElement);
+            });
+        }
+
+        // 渲染已捕捉寶可夢
+        function renderCaughtPokemon() {
+            elements.caughtPokemonContainer.innerHTML = '';
+            
+            gameData.player.caughtPokemon.forEach(pokemon => {
+                const pokemonElement = document.createElement('div');
+                pokemonElement.className = 'caught-pokemon';
+                pokemonElement.innerHTML = `
+                    <img src="${pokemon.image}" alt="${pokemon.name}">
+                    <div class="caught-pokemon-name">${pokemon.name}</div>
+                `;
+                elements.caughtPokemonContainer.appendChild(pokemonElement);
+            });
+        }
+
+        // 渲染任務
+        function renderTasks() {
+            elements.taskList.innerHTML = '';
+            
+            gameData.tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task-item';
+                taskElement.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-description">${task.description} (${task.progress}/${task.target})</div>
+                    </div>
+                    <div class="task-reward">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIxMCIgZmlsbD0iI0ZGQ0MwMCIvPjx0ZXh0IHg9IjEwIiB5PSIxNCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+JGNvaW47PC90ZXh0Pjwvc3ZnPg==" alt="金錢" style="width:20px; height:20px;">
+                        <span>${task.reward}</span>
+                    </div>
+                    <button class="task-complete-btn" ${task.completed ? 'disabled style="background:#9e9e9e"' : ''}>${task.completed ? '已完成' : '進行中'}</button>
+                `;
+                elements.taskList.appendChild(taskElement);
+            });
+        }
+
+        // 渲染商店
+        function renderShop() {
+            elements.shopContainer.innerHTML = '';
+            
+            gameData.shopItems.forEach(item => {
+                const shopItem = document.createElement('div');
+                shopItem.className = 'shop-item';
+                shopItem.innerHTML = `
+                    <div class="shop-item-name">${item.name}</div>
+                    <div class="shop-item-price">$${item.price}</div>
+                    <div class="shop-item-desc">${item.description}</div>
+                    <button class="buy-btn" data-id="${item.id}">購買</button>
+                `;
+                elements.shopContainer.appendChild(shopItem);
+            });
+            
+            // 添加商店按鈕事件監聽器
+            document.querySelectorAll('.buy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemId = parseInt(this.getAttribute('data-id'));
+                    buyItem(itemId);
+                });
+            });
+        }
+
+        // 設置事件監聽器
+        function setupEventListeners() {
+            // 捕捉按鈕
+            elements.catchBtn.addEventListener('click', catchPokemon);
+            
+            // 對戰按鈕
+            elements.battleBtn.addEventListener('click', startBattle);
+            
+            // 逃跑按鈕
+            elements.runBtn.addEventListener('click', function() {
+                addBattleLog(`你逃跑了！`, "info");
+                spawnWildPokemon();
+            });
+            
+            // 關閉模態框按鈕
+            elements.closeCatchModal.addEventListener('click', function() {
+                elements.catchModal.style.display = 'none';
+            });
+            
+            elements.closeEscapeModal.addEventListener('click', function() {
+                elements.escapeModal.style.display = 'none';
+            });
+            
+            elements.closeBuyModal.addEventListener('click', function() {
+                elements.buyModal.style.display = 'none';
+            });
+            
+            // 對戰行動按鈕
+            elements.attackBtn.addEventListener('click', attackAction);
+            elements.catchDuringBattleBtn.addEventListener('click', catchDuringBattle);
+            elements.usePotionBtn.addEventListener('click', usePotion);
+            elements.runFromBattleBtn.addEventListener('click', runFromBattle);
+            
+            // 點擊模態框外部關閉
+            window.addEventListener('click', function(event) {
+                if (event.target === elements.catchModal) {
+                    elements.catchModal.style.display = 'none';
+                }
+                if (event.target === elements.escapeModal) {
+                    elements.escapeModal.style.display = 'none';
+                }
+                if (event.target === elements.buyModal) {
+                    elements.buyModal.style.display = 'none';
+                }
+                if (event.target === elements.battleModal) {
+                    elements.battleModal.style.display = 'none';
+                    gameData.battleActive = false;
+                }
+                if (event.target === elements.taskCompleteModal) {
+                    elements.taskCompleteModal.style.display = 'none';
+                }
+            });
+        }
+
+        // 初始化遊戲
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
